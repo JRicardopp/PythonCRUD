@@ -1,11 +1,11 @@
-import enum
 import os
 import csv
-import sys
+
 
 CLIENT_TABLE = '.clients.csv' 
 CLIENT_SCHEMA = ['name', 'company', 'email', 'position'] 
 clients = []
+
 
 def _initialize_client_form_storage():
     with open(CLIENT_TABLE, mode='r') as f:
