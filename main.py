@@ -1,73 +1,51 @@
-import enum
-import os
-import csv
 import sys
 
-CLIENT_TABLE = '.clients.csv' 
-CLIENT_SCHEMA = ['name', 'company', 'email', 'position'] 
-clients = []
+clients = 'pablo,ricardo, '
 
-def _initialize_client_form_storage():
-    with open(CLIENT_TABLE, mode='r') as f:
-        reader = csv.DictReader(f,fieldnames=CLIENT_SCHEMA) 
-        for row in reader:
-           clients.append(row)
-            
-            
-def _save_clients_to_storage():
-    tmp_table_name = f'{CLIENT_TABLE}.tmp'
-    with open(tmp_table_name, mode='w')as f:
-        writer = csv.DictWriter(f, fieldnames=CLIENT_SCHEMA)
-        writer.writerows(clients)
-        
-        os.remove(CLIENT_TABLE) 
-    os.rename(tmp_table_name, CLIENT_TABLE)
-
-
-def create_client(client):
-    global clients 
+def create_client(client_name):
+    global clients# con global tomamos la variable global y la utilizacmos en nuestra funcion 
     
-    if client not in clients:
-        clients.append(client)
-        
+    if client_name not in clients:
+        clients += client_name
+        _add_comma()
+    else:
         print(' Client alredy is  in the client\'s list')
 
 def list_client():
-    print('uid |  name  | company  | email  | position ')
-    print('*' * 50)
-    for idx, client in enumerate(clients):
-        print('{uid} | {name} | {company} | {email} | {position}'.format(
-        uid=idx, 
-        name=client['name'], 
-        company=client['company'], 
-        email=client['email'], 
-        
-        position=client['position']))
-
-def update_client(client_id, updated_client):
     global clients
+    print(clients)
 
-    if len(clients) - 1 >= client_id:
-        clients[client_id] = updated_client
+
+def update_client(client_name, update_client_name):
+    global clients
+    if client_name in clients:
+        clients = clients.replace(client_name + ',', update_client_name + ',')    
     else:
         _not_client_list()
 
 
-def delete_client(client_id):
+def delete_client(cleint_name):
     global clients
-
-    for idx, client in enumerate(clients):
-        if idx == client_id:
-            del clients[idx] 
-            break
+    
+    if client_name in clients:
+        clients = clients.replace(client_name + ',', '')
+    else:
+        _not_client_list()
 
 
 def search_client(client_name):
-    for client in clients:
-        if client['name'] != client_name:
-            continue
+    client_list = clients.split(',')# splt para / entre , comas la lista de clientes 
+    
+    for client in client_list:
+        if client != client_name:
+            continue ## no ejecuetes nadamas hasta la siguiente la iteracion
         else:
             return True
+            
+
+def _add_comma():
+    global clients
+    clients += ','
 
 def _print_welcome():
     print('Welcome To Platzi Ventas')
@@ -78,62 +56,52 @@ def _print_welcome():
     print('[U]pdate.client')
     print('[D]elete client')
     print('[S]earch client')
+    
 
-
-def _get_client_field(field_name, message='What is the client {}?'):
-    field = None
-
-    while not field:
-        field = input(message.format(field_name))
-
-    return field
-
-
-def _get_client_from_user():
-    client = {
-        'name': _get_client_field('name'),
-        'company': _get_client_field('company'),
-        'email': _get_client_field('email'),
-        'position': _get_client_field('position'),
-    }
-    return client 
-
+def _get_client_name():
+    client_name = None
+    while not client_name:
+        client_name = input('What is the clien name? ')
+        
+        if client_name == 'exit':
+            client_name = None
+            break
+        
+    if not client_name:
+        sys.exit()
+    
+    return client_name
 
 def _not_client_list():
     return input('Clients is not in clients list')
 
 
 if __name__ == '__main__':
-    _initialize_client_form_storage()
-    
     _print_welcome()
     command= input()
     command = command.upper()
     list_client()
-    
     if command == 'C':
-        client = _get_client_from_user()
-        create_client(client)
-        
+        client_name = _get_client_name()
+        create_client(client_name)
+        list_client()
     elif command == 'L':
-         list_client()
+        list_client()
     elif command == 'U':
-        client_id = int(_get_client_field('id'))
-        updated_client = _get_client_from_user()
-        update_client(client_id, updated_client)
-        
+        client_name = _get_client_name()
+        update_client_name = input('What is the updated client name? ')
+        update_client(client_name, update_client_name)
+        list_client()
     elif command == 'D':
-        client_id = int(_get_client_field('id'))
-        delete_client(client_id)
+        client_name = _get_client_name()
+        delete_client(client_name)
+        list_client()
     elif command == 'S':
-        client_name = _get_client_field('name')
+        client_name = _get_client_name()
         found = search_client(client_name)
         if found:
-            print('The client is in the client\'s list')
+            print(f'The client {client_name} is in the client\'s list')
         else:
-            print('The client: {} is not in our client\'s list'.format(client_name))
+            print(f'The client: {client_name} is not in our client\'s list')
     else:
         print('Invalid command')
-        
-_save_clients_to_storage()
-    
