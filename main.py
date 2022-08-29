@@ -3,13 +3,13 @@ import os
 import csv
 import sys
 
-CLIENT_TABLE = '.clients.csv' # los archivos con punto inicial, hacen referencia a un archivo oculto.
-CLIENT_SCHEMA = ['name', 'company', 'email', 'position'] # es una lista de las llaves que a a utilizar CSV para contruir diccionaris 
+CLIENT_TABLE = '.clients.csv' 
+CLIENT_SCHEMA = ['name', 'company', 'email', 'position'] 
 clients = []
 
 def _initialize_client_form_storage():
     with open(CLIENT_TABLE, mode='r') as f:
-        reader = csv.DictReader(f,fieldnames=CLIENT_SCHEMA)#parametrofielname una lista para crear las llaves de el diccionario 
+        reader = csv.DictReader(f,fieldnames=CLIENT_SCHEMA) 
         for row in reader:
            clients.append(row)
             
@@ -18,10 +18,10 @@ def _save_clients_to_storage():
     tmp_table_name = f'{CLIENT_TABLE}.tmp'
     with open(tmp_table_name, mode='w')as f:
         writer = csv.DictWriter(f, fieldnames=CLIENT_SCHEMA)
-        writer.writerows(clients)#rows cuando son 2 y row 1 
+        writer.writerows(clients)
         
-        os.remove(CLIENT_TABLE) #permite manipular el sistema operativo
-    os.rename(tmp_table_name, CLIENT_TABLE)# para que se borre y se remplace cada vez que se utilice
+        os.remove(CLIENT_TABLE) 
+    os.rename(tmp_table_name, CLIENT_TABLE)
 
 
 def create_client(client):
